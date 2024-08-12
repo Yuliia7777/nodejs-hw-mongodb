@@ -6,9 +6,25 @@ import {
   getContactByIdService,
   getContactsService,
 } from '../services/contactsService.js';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
+import { parseFilterParams } from '../utils/parseFilterParams.js';
 
 export const getContactsController = async (req, res) => {
-  const contacts = await getContactsService();
+  const req_query = req.query;
+  console.log({ req_query });
+  const { page, perPage } = parsePaginationParams(req.query);
+  const { sortBy, sortOrder } = parseSortParams(req.query);
+  const filter = parseFilterParams(req.query);
+  // const contacts = await getContactsService();
+  const contacts = await getContactsService({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+    filter,
+  });
+
   res.json({
     status: 200,
     message: 'Successfully found contacts!',
@@ -22,8 +38,9 @@ export const createContactController = async (req, res) => {
   const req_body = req.body;
   console.log({ req_body });
 
-  res.status(201).json({
-    status: 201,
+  const status = 201;
+  res.status(status).json({
+    status,
     message: `Successfully created a contact!`,
     data: contact,
   });
