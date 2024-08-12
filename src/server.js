@@ -15,15 +15,6 @@ export const setupServer = () => {
     console.log(`Time: ${new Date().toLocaleString()}`);
     next();
   });
-
-  // app.use(express.json());
-  app.use(
-    express.json({
-      type: ['application/json', 'application/vnd.api+json'],
-      limit: '100kb',
-    }),
-  );
-
   app.use(cors());
   app.use(
     pino({
@@ -32,10 +23,17 @@ export const setupServer = () => {
       },
     }),
   );
+  app.use(express.json());
+  app.use(
+    express.json({
+      type: ['application/json', 'application/vnd.api+json'],
+      limit: '100kb',
+    }),
+  );
 
   app.get('/', (req, res) => {
     res.json({
-      message: 'goit-nodejs-hw-03:crud',
+      message: 'goit-nodejs-hw-03:validation,pagination,sort',
     });
   });
 
