@@ -17,7 +17,11 @@ import {
 
 const router = Router();
 
-router.post('/contacts', controllerWrapper(createContactController));
+router.post(
+  '/contacts',
+  validateBody(createContactValidationSchema),
+  controllerWrapper(createContactController),
+);
 router.put(
   '/contacts/:contactId',
   validateId,
