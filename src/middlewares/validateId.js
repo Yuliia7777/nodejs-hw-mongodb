@@ -1,12 +1,13 @@
-import { HttpError } from 'http-errors';
+import createHttpError from 'http-errors';
 import { isValidObjectId } from 'mongoose';
 
 export const validateId = (req, res, next) => {
-  const params = req.params;
-  const id = params.contactId;
-  // const { id } = req.params;
-  if (!isValidObjectId(id)) {
-    throw HttpError(400, 'invalidIdObject: Bad request');
+  const { contactId } = req.params;
+
+  if (!isValidObjectId(contactId)) {
+    // Создаем экземпляр ошибки, а не вызываем HttpError как функцию
+    throw new createHttpError.BadRequest('invalidIdObject: Bad request');
   }
+
   next();
 };
