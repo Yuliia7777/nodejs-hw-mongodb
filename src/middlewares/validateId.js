@@ -6,7 +6,8 @@ export const validateId = (req, res, next) => {
 
   if (!isValidObjectId(contactId)) {
     // Создаем экземпляр ошибки, а не вызываем HttpError как функцию
-    throw new createHttpError.BadRequest('invalidIdObject: Bad request');
+    // throw new createHttpError.BadRequest('invalidIdObject: Bad request');
+    throw createHttpError(404, 'Contact not found');
   }
 
   next();
