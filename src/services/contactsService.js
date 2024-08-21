@@ -8,15 +8,12 @@ export const getContactsService = async ({
   sortOrder = SORT_ORDER.ASC,
   sortBy = '_id',
   filter = {},
+  userId,
 }) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
-  const contactsQuery = ContactsCollection.find();
-  // const contactsTotal = await ContactsCollection.find()
-  //   .merge(contactsQuery)
-  //   .countDocuments();
-  // console.log({ contactsTotal });
+  const contactsQuery = ContactsCollection.find({ userId });
 
   if (filter.name) {
     contactsQuery.where('name').regex(new RegExp(filter.name, 'i'));
@@ -54,38 +51,41 @@ export const getContactsService = async ({
   };
 };
 
-export const getContactByIdService = async (id) => {
-  const contact = await ContactsCollection.findById(id);
+export const getContactByIdService = async (userId, id) => {
+  // const contact = await ContactsCollection.findById(studentId);
+  const contact = await ContactsCollection.find({ _id: id, userId });
   return contact;
 };
 
-export const createContactService = async (payload) => {
-  console.log({ payload });
-  const contact = await ContactsCollection.create(payload);
+export const createContactService = async (contactData) => {
+  console.log({ contactData });
+  const contact = await ContactsCollection.create(contactData);
   return contact;
 };
 
-export const deleteContactByIdService = async (contactId) => {
+export const deleteContactByIdService = async (userId, id) => {
   const contact = await ContactsCollection.findOneAndDelete({
-    _id: contactId,
+    _id: id,
+    userId,
   });
 
   return contact;
 };
 
 export const updateContactService = async (
-  contactId,
-  payload,
+  userId,
+  id,
+  contactData,
   options = {},
 ) => {
-  console.log('updatecontactService');
-  console.log({ contactId });
-  console.log({ payload });
-  console.log({ options });
+  // console.log('updatecontactService');
+  // console.log({ id });
+  // console.log({ contactData });
+  // console.log({ options });
 
   const rawResult = await ContactsCollection.findOneAndUpdate(
-    { _id: contactId },
-    payload,
+    { _id: id, userId },
+    contactData,
     {
       new: true,
       includeResultMetadata: true,

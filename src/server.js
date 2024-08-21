@@ -2,9 +2,12 @@ import cors from 'cors';
 import pino from 'pino-http';
 import express from 'express';
 import { env } from './utils/env.js';
-import contactsRouter from './routers/contactsRouter.js';
+// import contactsRouter from './routers/contactsRouter.js';
+// import authUserRouter from './routers/authUserRouter.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import cookieParser from 'cookie-parser';
+import router from './routers/router.js';
 
 export const setupServer = () => {
   const PORT = Number(env('PORT', '3000'));
@@ -30,14 +33,17 @@ export const setupServer = () => {
       limit: '100kb',
     }),
   );
+  app.use(cookieParser());
 
   app.get('/', (req, res) => {
     res.json({
-      message: 'goit-nodejs-hw-03:validation,pagination,sort',
+      message: 'goit-nodejs-hw-05:auth',
     });
   });
 
-  app.use(contactsRouter);
+  // app.use(authUserRouter);
+  // app.use(contactsRouter);
+  app.use(router);
 
   app.use('*', notFoundHandler);
   app.use(errorHandler);
