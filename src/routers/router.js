@@ -6,6 +6,7 @@ import { auth } from '../middlewares/auth.js';
 const router = Router();
 
 router.use('/auth', authUserRouter);
+// router.use('/auth', authUserResetRouter);
+// router.use('/contacts/all', contactsRouter);
 router.use('/contacts', auth, contactsRouter);
-
 export default router;

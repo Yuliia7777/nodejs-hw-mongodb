@@ -8,10 +8,13 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import cookieParser from 'cookie-parser';
 import router from './routers/router.js';
+import { UPLOADS_DIR } from './constants/index.js';
 
 export const setupServer = () => {
   const PORT = Number(env('PORT', '3000'));
   const app = express();
+
+  app.use('/uploads', express.static(UPLOADS_DIR));
 
   app.use((req, res, next) => {
     console.log('-^-'.repeat(33));
@@ -37,7 +40,7 @@ export const setupServer = () => {
 
   app.get('/', (req, res) => {
     res.json({
-      message: 'goit-nodejs-hw-05:auth',
+      message: 'goit-nodejs-hw-06:emailBy-Brevo and save-img-to-cloudinary',
     });
   });
 

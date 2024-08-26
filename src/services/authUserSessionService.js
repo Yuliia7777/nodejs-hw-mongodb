@@ -43,6 +43,7 @@ export const getAuthUserSessionService = async (authUser) => {
   const session = await getAuthUserSession(authUser._id);
   return session;
 };
+
 export const getAuthUserSessionByAccessToken = (accessToken) =>
   AuthUserSessionCollection.findOne({ accessToken });
 

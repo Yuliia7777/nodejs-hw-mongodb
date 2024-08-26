@@ -1,8 +1,6 @@
-import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
 
 import {
-  // getAuthUserById,
   getAuthUserByEmail,
   getAuthUsersService,
   createAuthUserService,
@@ -15,6 +13,12 @@ import {
   setupAuthUserSessionCookies,
   isRefreshTockenExpired,
 } from '../services/authUserSessionService.js';
+
+import {
+  resetAuthUserPasswordService,
+  sendAuthUserResetPasswordEmailService,
+} from '../services/authUserResetService.js';
+import { comparePasswords } from '../utils/password.js';
 
 export const registerAuthUserController = async (req, res) => {
   const { email, name } = req.body;
@@ -60,7 +64,7 @@ export const loginAuthUserController = async (req, res) => {
     throw createHttpError(401, 'Unauthorized');
   }
 
-  const isPasswordCorrect = await bcrypt.compare(password, authUser.password);
+  const isPasswordCorrect = await comparePasswords(password, authUser.password);
   if (!isPasswordCorrect) {
     throw createHttpError(401, 'Unauthorized');
   }
@@ -89,7 +93,6 @@ export const logoutAuthUserController = async (req, res) => {
 
 export const refreshAuthUserSessionController = async (req, res) => {
   const { sessionId } = req.cookies;
-  // const { sessionId, refreshToken } = req.cookies;
 
   const session = await getAuthUserSessionById(sessionId);
   if (!session) {
@@ -110,5 +113,37 @@ export const refreshAuthUserSessionController = async (req, res) => {
     data: {
       accessToken: authUserSession.accessToken,
     },
+  });
+};
+
+export const sendAuthUserResetPasswordEmailController = async (req, res) => {
+  const body = req.body;
+  console.log({ body });
+  const { email } = req.body;
+  console.log({ email });
+
+  const authUser = await getAuthUserByEmail(email);
+  console.log({ authUser });
+  if (!authUser) {
+    throw createHttpError(404, `User ${email} not found`);
+  }
+
+  await sendAuthUserResetPasswordEmailService(authUser);
+
+  res.json({
+    message: 'Reset password email was successfully sent!',
+    status: 200,
+    data: {},
+  });
+};
+
+export const resetAuthUserPasswordController = async (req, res) => {
+  const { token, password } = req.body;
+  await resetAuthUserPasswordService(token, password);
+
+  res.json({
+    message: 'Password was successfully reset!',
+    status: 200,
+    data: {},
   });
 };
