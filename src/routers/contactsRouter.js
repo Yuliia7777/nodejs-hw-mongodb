@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import express from 'express';
 import {
   getContactsController,
   getContactByIdController,
@@ -17,10 +17,12 @@ import {
 } from '../validation/contactValidation.js';
 import { upload } from '../middlewares/multer.js';
 
-const router = Router();
+const router = express.Router();
+const jsonParser = express.json();
 
 router.post(
   '/',
+  jsonParser,
   upload.single('photo'),
   validateBody(createContactValidationSchema),
   defineContactDataObject,
@@ -53,6 +55,7 @@ router.delete(
 router.patch(
   '/:id',
   validateId,
+  jsonParser,
   upload.single('photo'),
   validateBody(updateContactValidationSchema),
   defineContactDataObject,

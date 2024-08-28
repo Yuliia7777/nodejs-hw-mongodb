@@ -4,7 +4,7 @@ import createHttpError from 'http-errors';
 import { getEncryptedPassword } from '../utils/password.js';
 import { AuthUserCollection } from '../db/models/authUserModel.js';
 
-import { TEMP_DIR, TEMPLATES_DIR } from '../constants/index.js';
+import { TEMPLATES_DIR } from '../constants/index.js';
 import { SMTP } from '../constants/smtp.js';
 
 import { sendEmail } from '../utils/sendMail.js';
@@ -61,10 +61,10 @@ const getRequestResetEmailBodyHtml = async (data) => {
     link,
   });
 
-  const tempFile = path.join(TEMP_DIR, 'reset-password-email.out.html');
-  await fs.writeFile(tempFile, html);
-  console.log({ tempFile });
-  console.log({ html });
+  //     const tempFile = path.join(TEMP_DIR, 'reset-password-email.out.html');
+  //   await fs.writeFile(tempFile, html);
+  //   console.log({ tempFile });
+  //   console.log({ html });
 
   return html;
 };

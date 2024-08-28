@@ -15,6 +15,11 @@ const contactsSchema = new Schema(
       // match: '/.+\\@.+\\..+/',
       required: false,
     },
+    photo: {
+      type: String,
+      required: false,
+      default: null,
+    },
     isFavourite: {
       type: Boolean,
       default: false,
@@ -23,7 +28,6 @@ const contactsSchema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
     },
-
     contactType: {
       type: String,
       required: true,
