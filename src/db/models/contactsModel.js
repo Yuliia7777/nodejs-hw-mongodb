@@ -14,6 +14,7 @@ const contactsSchema = new Schema(
       type: String,
       // match: '/.+\\@.+\\..+/',
       required: false,
+      default: null,
     },
     photo: {
       type: String,
