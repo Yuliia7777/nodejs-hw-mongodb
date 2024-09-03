@@ -4,7 +4,7 @@ import createHttpError from 'http-errors';
 import { getEncryptedPassword } from '../utils/password.js';
 import { AuthUserCollection } from '../db/models/authUserModel.js';
 
-import { TEMPLATES_DIR } from '../constants/index.js';
+import { TEMP_DIR, TEMPLATES_DIR } from '../constants/index.js';
 import { SMTP } from '../constants/smtp.js';
 
 import { sendEmail } from '../utils/sendMail.js';
@@ -15,7 +15,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 export const sendAuthUserResetPasswordEmailService = async (user) => {
-  console.log({ user });
+  // console.log('sendResetAuthUserTokenEmailService.user:', { user });
+  // const jwt_secret = env('JWT_SECRET');
+  // console.log('JWT_SECRET:', jwt_secret);
 
   const resetToken = jwt.sign(
     {
@@ -24,10 +26,10 @@ export const sendAuthUserResetPasswordEmailService = async (user) => {
     },
     env('JWT_SECRET'),
     {
-      expiresIn: '55m',
+      expiresIn: '15m',
     },
   );
-  console.log({ resetToken });
+  //console.log({ resetToken });
   const html = await getRequestResetEmailBodyHtml({ user, resetToken });
 
   await sendEmail({
@@ -51,25 +53,27 @@ const getRequestResetEmailBodyHtml = async (data) => {
   ).toString();
 
   const template = handlebars.compile(templateSourceFile);
-  const domain = env('APP_DOMAIN');
-  const link = `${domain}/auth/reset-password`;
+  const link = `${env('APP_DOMAIN')}/auth/reset-password`;
   const html = template({
-    domain,
     name: user.name,
     email: user.email,
     token: resetToken,
     link,
   });
 
-  //     const tempFile = path.join(TEMP_DIR, 'reset-password-email.out.html');
-  //   await fs.writeFile(tempFile, html);
-  //   console.log({ tempFile });
-  //   console.log({ html });
+  const tempFile = path.join(TEMP_DIR, 'reset-password-email.html');
+  await fs.writeFile(tempFile, html);
 
+  console.log('ENVIRONEMNT:');
+  // if (env('ENVIRONMENT', '') === 'DEV') {
+  console.log({ tempFile });
+  console.log({ html });
+  // }
   return html;
 };
 
 // ResetPassword
+// export const resetAuthUserPasswordService = async (payload) => {
 export const resetAuthUserPasswordService = async (token, password) => {
   const jwt_secret = env('JWT_SECRET');
   console.log({ jwt_secret });

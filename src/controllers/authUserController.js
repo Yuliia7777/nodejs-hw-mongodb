@@ -9,16 +9,49 @@ import {
 import {
   getAuthUserSessionById,
   getAuthUserSessionService,
+  getAuthUsersSessionsService,
   refreshAuthUsersSessionService,
   setupAuthUserSessionCookies,
   isRefreshTockenExpired,
 } from '../services/authUserSessionService.js';
 
-import {
-  resetAuthUserPasswordService,
-  sendAuthUserResetPasswordEmailService,
-} from '../services/authUserResetService.js';
+// import {
+//   resetAuthUserPasswordService,
+//   sendAuthUserResetPasswordEmailService,
+// } from '../services/authUserResetService.js';
 import { comparePasswords } from '../utils/password.js';
+
+export const getAuthController = async (req, res) => {
+  res.send({
+    sender: 'authUserController',
+    methods: {
+      login: '/auth/login',
+      logout: '/auth/logout',
+      refresh: '/auth\refresh',
+      register: '/auth\register',
+      request: '/auth/request-reset-email',
+      reset: '/auth/reset-password',
+    },
+    datetimestamp: new Date(),
+  });
+};
+
+export const getAuthUsersController = async (req, res) => {
+  const authUsers = await getAuthUsersService(req.query);
+  res.send({
+    datetimestamp: new Date(),
+    count: authUsers.length,
+    data: authUsers,
+  });
+};
+export const getAuthUsersSessionsController = async (req, res) => {
+  const authUsersSessions = await getAuthUsersSessionsService();
+  res.send({
+    datetimestamp: new Date(),
+    count: authUsersSessions.length,
+    data: authUsersSessions,
+  });
+};
 
 export const registerAuthUserController = async (req, res) => {
   const { email, name } = req.body;
@@ -36,27 +69,6 @@ export const registerAuthUserController = async (req, res) => {
   });
 };
 
-export const getAuthController = async (req, res) => {
-  res.send({
-    body: req.body,
-    data: req.data,
-    params: req.params,
-    query: req.query,
-    sender: 'authUserController',
-  });
-};
-export const getAuthUsersController = async (req, res) => {
-  const authUsers = await getAuthUsersService(req.query);
-  res.send({
-    authUsers,
-    body: req.body,
-    data: req.data,
-    params: req.params,
-    query: req.query,
-    sender: 'authUserController',
-  });
-};
-
 export const loginAuthUserController = async (req, res) => {
   const { email, password } = req.body;
   const authUser = await getAuthUserByEmail(email);
@@ -70,7 +82,6 @@ export const loginAuthUserController = async (req, res) => {
   }
 
   const session = await getAuthUserSessionService(authUser._id);
-
   setupAuthUserSessionCookies(res, session);
 
   res.json({
@@ -116,34 +127,27 @@ export const refreshAuthUserSessionController = async (req, res) => {
   });
 };
 
-export const sendAuthUserResetPasswordEmailController = async (req, res) => {
-  const body = req.body;
-  console.log({ body });
-  const { email } = req.body;
-  console.log({ email });
+// export const sendAuthUserResetPasswordEmailController = async (req, res) => {
+//   const { email } = req.body;
+//   const authUser = await getAuthUserByEmail(email);
+//   if (!authUser) {
+//     throw createHttpError(404, 'User not found');
+//   }
 
-  const authUser = await getAuthUserByEmail(email);
-  console.log({ authUser });
-  if (!authUser) {
-    throw createHttpError(404, `User ${email} not found`);
-  }
+//   res.json({
+//     message: 'Reset password email was successfully sent!',
+//     status: 200,
+//     data: {},
+//   });
+// };
 
-  await sendAuthUserResetPasswordEmailService(authUser);
+// export const resetAuthUserPasswordController = async (req, res) => {
+//   const { token, password } = req.body;
+//   await resetAuthUserPasswordService(token, password);
 
-  res.json({
-    message: 'Reset password email was successfully sent!',
-    status: 200,
-    data: {},
-  });
-};
-
-export const resetAuthUserPasswordController = async (req, res) => {
-  const { token, password } = req.body;
-  await resetAuthUserPasswordService(token, password);
-
-  res.json({
-    message: 'Password was successfully reset!',
-    status: 200,
-    data: {},
-  });
-};
+//   res.json({
+//     message: 'Password was successfully reset!',
+//     status: 200,
+//     data: {},
+//   });
+// };

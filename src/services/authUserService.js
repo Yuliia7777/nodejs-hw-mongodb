@@ -1,12 +1,9 @@
-import bcrypt from 'bcrypt';
 import { AuthUserCollection } from '../db/models/authUserModel.js';
 import { AuthUserSessionCollection } from '../db/models/authUserSessionModel.js';
+import { getEncryptedPassword } from '../utils/password.js';
 
-export const getAuthUsersService = async (payload) => {
+export const getAuthUsersService = async () => {
   const authUsers = AuthUserCollection.find();
-  //   const user = await AuthUserCollection.findOne({ email: payload.email });
-  //   // return user;
-  //   if (user) throw createHttpError(409, 'Email has already in use');
   return authUsers;
 };
 
@@ -16,7 +13,9 @@ export const getAuthUserByEmail = (email) =>
   AuthUserCollection.findOne({ email });
 
 export const createAuthUserService = async (userData) => {
-  const encryptedPassword = await bcrypt.hash(userData.password, 10);
+  // const encryptedPassword = await bcrypt.hash(userData.password, 10);
+  const encryptedPassword = await getEncryptedPassword(userData.password);
+
   return await AuthUserCollection.create({
     ...userData,
     password: encryptedPassword,

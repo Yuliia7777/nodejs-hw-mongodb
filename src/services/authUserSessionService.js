@@ -9,9 +9,17 @@ export const isRefreshTockenExpired = (session) => {
   return new Date() > new Date(session.refreshTokenValidUntil);
 };
 
+export const getAuthUsersSessionsService = async () => {
+  const authUserSessions = await AuthUserSessionCollection.find();
+  return authUserSessions;
+};
+
 export const refreshAuthUsersSessionService = async (session) => {
-  // await AuthUserSessionCollection.deleteOne({_id:session._id });
   await AuthUserSessionCollection.findByIdAndDelete(session._id);
+  // await AuthUserSessionCollection.deleteOne({
+  //   _id: session._id,
+  //   userId: session.userId,
+  // });
   const authUserSession = getAuthUserSession(session.userId);
   return authUserSession;
 };
@@ -31,9 +39,10 @@ export const getAuthUserSessionObject = () => {
 export const getAuthUserSession = async (userId) => {
   const sessionObject = getAuthUserSessionObject();
   const authUserSession = await AuthUserSessionCollection.create({
-    userId,
     ...sessionObject,
+    userId,
   });
+  console.log({ authUserSession });
   return authUserSession;
 };
 
