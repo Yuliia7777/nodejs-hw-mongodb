@@ -11,13 +11,13 @@
   },
   "servers": [
     {
-      "url": "http://127.0.0.1:3000"
+      "url": "https://contacts-app-x92j.onrender.com"
     },
     {
       "url": "http://localhost:3000"
     },
     {
-      "url": "https://contacts-app-x92j.onrender.com"
+      "url": "http://127.0.0.1:3000"
     }
   ],
   "tags": [
@@ -177,7 +177,6 @@
                 "type": "object",
                 "required": [
                   "name",
-                  "email",
                   "phoneNumber"
                 ],
                 "properties": {
@@ -201,6 +200,20 @@
                     "description": "Contact's photo",
                     "type": "string",
                     "format": "binary"
+                  },
+                  "isFavorite": {
+                    "description": "Contact is Favorite",
+                    "type": "boolean"
+                  },
+                  "contactType": {
+                    "description": "Contact's Type",
+                    "type": "string",
+                    "enum": [
+                      "home",
+                      "work",
+                      "personal"
+                    ],
+                    "default": "personal"
                   }
                 }
               }
@@ -325,6 +338,56 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "The name of the contact",
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "phoneNumber": {
+                    "description": "The phone number of the contact",
+                    "type": "string",
+                    "example": "+1234567890"
+                  },
+                  "isFavorite": {
+                    "description": "Indicates whether the contact is marked as a favorite",
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "email": {
+                    "description": "The email of the contact",
+                    "type": "string",
+                    "example": "johndoe@gmail.com",
+                    "default": false
+                  },
+                  "contactType": {
+                    "description": "Specifies the type of contact",
+                    "type": "string",
+                    "enum": [
+                      "work",
+                      "home",
+                      "personal"
+                    ],
+                    "example": "work",
+                    "default": "personal"
+                  },
+                  "photo": {
+                    "description": "The photo of the contact",
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "description": "Fields to be updated for the contact. Only the fields provided will be updated."
+        },
         "responses": {
           "200": {
             "description": "Successfully updated the contact",
@@ -487,52 +550,99 @@
             }
           }
         }
-      },
-      "put": {
+      }
+    },
+    "/auth/register": {
+      "post": {
         "tags": [
-          "Contacts"
+          "Auth"
         ],
-        "summary": "Update or create a contact by ID",
-        "operationId": "upsertContact",
-        "description": "Update an existing contact or create a new one with the provided ID.",
+        "summary": "User registration",
+        "operationId": "registerUser",
+        "description": "Create a new user",
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the contact to update",
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "_id": {
+                    "description": "Backend-generated unique identifier.",
+                    "type": "string",
+                    "format": "objectId",
+                    "example": "66a35382997eac73e992ae30"
+                  },
+                  "name": {
+                    "description": "Username",
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "email": {
+                    "description": "E-mail address",
+                    "type": "string",
+                    "example": "John_Doe@gmail.com"
+                  },
+                  "password": {
+                    "description": "Password",
+                    "type": "string",
+                    "example": "examplepwd12345"
+                  }
+                }
+              }
             }
-          }
-        ],
+          },
+          "description": "User details required for registration"
+        },
         "responses": {
-          "200": {
-            "description": "Successfully updated the contact",
+          "201": {
+            "description": "User registered successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
                   "properties": {
                     "status": {
                       "type": "integer",
-                      "example": 200
+                      "example": 201
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully patched a contact!"
+                      "example": "Successfully registered a user!"
                     },
                     "data": {
                       "type": "object",
                       "properties": {
-                        "contact": {
-                          "type": "object",
-                          "additionalProperties": true
+                        "_id": {
+                          "description": "Backend-generated unique identifier.",
+                          "type": "string",
+                          "format": "objectId",
+                          "example": "66a35382997eac73e992ae30"
+                        },
+                        "name": {
+                          "description": "Username",
+                          "type": "string",
+                          "example": "John Doe"
+                        },
+                        "email": {
+                          "description": "E-mail address",
+                          "type": "string",
+                          "example": "John_Doe@gmail.com"
                         }
                       }
                     }
@@ -541,48 +651,14 @@
               }
             }
           },
-          "401": {
-            "$ref": "#/components/responses/401"
+          "400": {
+            "$ref": "#/components/responses/400"
           },
-          "404": {
-            "description": "Contact not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 404
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Contact not found"
-                    }
-                  }
-                }
-              }
-            }
+          "409": {
+            "$ref": "#/components/responses/409"
           },
           "500": {
-            "description": "Error updating contact",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 500
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Error updating contact"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -1005,6 +1081,30 @@
       }
     },
     "responses": {
+      "400": {
+        "description": "Bad request, invalid input data.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 400
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Invalid input data. Please check the request body."
+                }
+              }
+            }
+          }
+        }
+      },
       "401": {
         "description": "Unauthorized error",
         "content": {
@@ -1036,6 +1136,50 @@
                       "example": "Access token expired"
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      },
+      "409": {
+        "description": "Conflict, email already in use",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Email already in use"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 500
+                },
+                "message": {
+                  "type": "string",
+                  "example": "An unexpected error occurred."
                 }
               }
             }

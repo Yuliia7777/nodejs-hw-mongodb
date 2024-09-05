@@ -14,7 +14,6 @@ requestBody:
         type: object
         required:
           - name
-          - email
           - phoneNumber
         properties:
           name:
@@ -34,6 +33,15 @@ requestBody:
             description: "Contact's photo"
             type: string
             format: binary
+          isFavorite:
+            description: 'Contact is Favorite'
+            type: boolean
+          contactType:
+            description: "Contact's Type"
+            type: string
+            enum: ['home', 'work', 'personal']
+            default: 'personal'
+            # example: 'personal'
 responses:
   '201':
     description: Creates a contact
