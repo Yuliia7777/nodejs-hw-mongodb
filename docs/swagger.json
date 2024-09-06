@@ -177,7 +177,8 @@
                 "type": "object",
                 "required": [
                   "name",
-                  "phoneNumber"
+                  "phoneNumber",
+                  "contactType"
                 ],
                 "properties": {
                   "name": {
@@ -217,8 +218,28 @@
                   }
                 }
               }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John Dou"
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "example": "+0987654321"
+                  },
+                  "contactType": {
+                    "type": "string",
+                    "example": "home"
+                  }
+                }
+              }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "201": {
