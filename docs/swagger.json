@@ -201,7 +201,7 @@
                     "type": "string",
                     "format": "binary"
                   },
-                  "isFavorite": {
+                  "isFavourite": {
                     "description": "Contact is Favorite",
                     "type": "boolean"
                   },
@@ -354,7 +354,7 @@
                     "type": "string",
                     "example": "+1234567890"
                   },
-                  "isFavorite": {
+                  "isFavourite": {
                     "description": "Indicates whether the contact is marked as a favorite",
                     "type": "boolean",
                     "example": true

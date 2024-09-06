@@ -33,7 +33,7 @@ requestBody:
             description: "Contact's photo"
             type: string
             format: binary
-          isFavorite:
+          isFavourite:
             description: 'Contact is Favorite'
             type: boolean
           contactType:
