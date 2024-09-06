@@ -34,7 +34,7 @@ requestBody:
             type: string
             format: binary
           isFavourite:
-            description: 'Contact is Favorite'
+            description: 'Contact is Favourite'
             type: boolean
           contactType:
             description: "Contact's Type"
